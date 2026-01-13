@@ -1,0 +1,123 @@
+/**
+ * New Seating Modal Styles
+ */
+
+.new-seating-modal {
+    width: 90%;
+    max-width: 500px;
+}
+
+.new-seating-modal .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.new-seating-modal .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.checkbox-label span {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.disabled-hint {
+    color: rgba(255, 165, 0, 0.8);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-secondary);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.bonus-verification {
+    background: rgba(26, 26, 46, 0.5);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.auto-determination {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.auto-determination strong {
+    color: var(--color-accent);
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge.bonus {
+    background: rgba(255, 215, 0, 0.2);
+    color: rgba(255, 215, 0, 1);
+    border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.badge.regular {
+    background: rgba(0, 150, 255, 0.2);
+    color: rgba(100, 180, 255, 1);
+    border: 1px solid rgba(0, 150, 255, 0.5);
+}
+
+.determination-logic {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.determination-logic p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.form-group.override {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.form-group.override label {
+    margin-bottom: 0;
+}

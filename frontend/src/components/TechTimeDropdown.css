@@ -1,0 +1,205 @@
+/* Phase 3: Tech Time Dropdown Styles */
+.tech-time-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 5rem;
+    z-index: 1000;
+}
+
+.tech-time-dropdown {
+    background-color: var(--color-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, var(--opacity-faint));
+}
+
+.tech-time-dropdown h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.tech-search input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, var(--opacity-subtle));
+    border-radius: 4px;
+    background-color: var(--color-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tech-search input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.action-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.action-selector label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, var(--opacity-faint));
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+
+.action-selector label:hover {
+    background-color: rgba(255, 255, 255, var(--opacity-subtle));
+}
+
+.action-selector input[type="radio"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.action-selector span {
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.tech-results {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, var(--opacity-faint));
+    border-radius: 4px;
+}
+
+.tech-result-item {
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, var(--opacity-faint));
+    cursor: pointer;
+    transition: all 0.25s;
+    border-bottom: 1px solid rgba(255, 255, 255, var(--opacity-faint));
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tech-result-item:last-child {
+    border-bottom: none;
+}
+
+.tech-result-item:hover {
+    background-color: rgba(255, 255, 255, var(--opacity-subtle));
+}
+
+.tech-result-item.selected {
+    background-color: rgba(212, 175, 55, var(--opacity-faint));
+    border-left: 3px solid var(--color-accent);
+}
+
+.tech-status {
+    margin-left: auto;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.tech-status.clocked-in {
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #90EE90;
+}
+
+.tech-status.on-break {
+    background-color: rgba(255, 165, 0, 0.2);
+    color: #FFA500;
+}
+
+.tech-status.clocked-out {
+    background-color: rgba(128, 128, 128, 0.2);
+    color: #A0A0A0;
+}
+
+.error-message {
+    padding: 0.75rem;
+    margin: 1rem 0;
+    background-color: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    border-radius: 4px;
+    color: #FF6B6B;
+    font-size: 0.9rem;
+}
+
+.warning-message {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background-color: rgba(255, 165, 0, 0.2);
+    border: 1px solid rgba(255, 165, 0, 0.4);
+    border-radius: 4px;
+    color: #FFA500;
+    font-size: 0.9rem;
+}
+
+.tech-time-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 0.75rem;
+    background-color: var(--color-accent);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.25s;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: rgba(212, 175, 55, var(--opacity-medium));
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, var(--opacity-faint));
+    color: var(--text-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, var(--opacity-subtle));
+}
+
+.coming-soon-note {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, var(--opacity-faint));
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    font-style: italic;
+}

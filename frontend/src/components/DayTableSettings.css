@@ -1,0 +1,6 @@
+.daytable-settings { padding: 10px; }
+.daytable-settings h3 { margin-top: 0; }
+.setting-row { margin: 8px 0; }
+.settings-actions { margin-top: 12px; }
+.error-message { color: var(--danger, #c00); }
+.success-message { color: var(--accent, #0a0); }

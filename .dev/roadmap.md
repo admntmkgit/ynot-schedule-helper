@@ -318,6 +318,7 @@ Phase 8: Checklists & Day End **IMPLEMENTED**
     - Frontend: After closing, disable all edits to day data
     - Deliverable: Complete checklist system and day close workflow
 
+
 Phase 9: Tech Recommendation Engine
     - Overview: Provide always-visible recommendation widgets and configurable service-specific recommendation widgets. Recommendations support both Regular and Bonus turn suggestions and fast UI actions (double-click to expand / select).
     - Backend: Implement scheduling suggestion algorithm with 4-priority logic (used for detailed recommendations):
@@ -345,6 +346,66 @@ Phase 9: Tech Recommendation Engine
     - Frontend: Visual indicators on widget items on hover: availability, skill (when used), turn counts, row number priority
     - Frontend: Widgets refresh automatically when day data changes; clicking/double-clicking performs the described quick actions
     - Deliverable: Always-visible Regular/Bonus recommendation widgets, configurable service-specific widgets via Settings, small-display top-2 compact UI, expand-to-6 and double-click quick-add seating behavior
+
+---
+
+Phase 9.1: Bug Fixes & Core Improvements & Consistency Fixes
+    Bugs:
+    - Tech alias validation: enforce uniqueness to prevent backend errors
+    - Tech Time modal: eliminate double-click behavior and improve responsiveness
+        - Auto clock-in when selecting a tech (if not already clocked in)
+        - Remove standalone "Clock In" button
+        - Execute Break Start/Stop and Clock Out immediately (no modal submission)
+        - Auto-dismiss modal after action or when clicking outside
+    
+    Improvements:
+    - Service model: add `short_name` field (short code for display in compact views, e.g., "Mani", "Pedi")
+    - Service model: add `is_default` flag for base services available to all techs
+        - Auto-assign skill to all existing techs on service creation
+        - Auto-assign skill to all new techs when hired
+        - Allow manual skill override (not hardcoded)
+    - Sidebar layout structure (default order): New Day Checklist → Recommendation Widgets → End Day Checklist
+        - New Day Checklist: auto-hide when complete
+        - Recommendation Widgets: always visible during day (Phase 9)
+        - End Day Checklist: appears after "Day End" button clicked
+    - Close Day Summary:
+        - Toggle between "Current - Sorted by Alias then Name" and "Sorted by RowID from DayTable" filter modes via alias column header click
+        - Display column totals for: Value, After Adjustment, Adjustments
+        - Allow reopening summary view after day closure
+    
+    Consistency Fixes:
+    - Clarify turn calculation for `is_default` services: bonus turn logic applies at the seating level (isBonus checkbox determined by service.is_bonus and request order), not at service definition level
+    - Recommendation engine "row number priority" (Phase 9) refers to the tech's DayRow position in the day table (lower row number = higher priority)
+    - Day row numbering: immutable based on clock-in order; re-ordering not supported
+
+Phase 9.2: Seating Display & Layout Optimization
+    Seating interactions (streamline closing workflow):
+    - Open seatings: double-click to open Seat Closing Modal (new)
+        - Autofocus value input field for rapid entry
+        - Submit via Enter key
+        - Auto-check value adjustment if value is not divisible by 5
+            - Value adjustment logic: checkbox applies fixed -3 adjustment; validation in Phase 9.2 (divisible by 5) is a UI helper for data entry, not a business rule
+            - allow manual check/uncheck
+    - Open seatings: long-press/hold to edit details
+        - Editable fields: service short_name, time_needed, isRequested toggle
+        - Auto-recalculate turn types on changes
+        - Remove the value input and closing button - we will be doing it in the separate modal
+    - Closed seatings: double-click to view/adjust details
+        - Editable: value adjustment checkbox, isRequested toggle
+        - Close the modal after checkbox toggle
+        - Auto-recalculate turn types on changes
+    Day table refinements:
+    - Compact seating display: merge details to single row, minimize padding
+    - Add seating: double-click row ID or empty seating cell to add seating for that tech
+    - Remove action column
+
+Phase 9.3: Quick Action Bar
+    New sidebar widget for rapid tech/seating workflow:
+    - Tech lookup input: search by alias or name to quickly open seatings for selected tech
+    - Open seatings filter input: filter displayed seatings by tech alias/name
+    - Open seatings panel: horizontal scrollable list of current seatings (tech alias + seating display), ordered by time created
+
+---
 
 Phase 10: PIN Authentication
     - Backend: Add PIN storage to config.json (hashed with salt)

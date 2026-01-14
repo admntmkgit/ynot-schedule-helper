@@ -110,3 +110,56 @@ Scheduling Suggestion Logic - Services for walk-in priority:
     2: Tech skill - must know how to do it
     3: Turns type (Regular or Bonus - dependent on Service) give priority to techs with less turns
     4: Rows number (lower number should get clients first)
+
+
+Phase 8.1: Fixes
+    Bugs:
+    - Adding Tech with non-unique alias breaks the backend
+    - Tech Time flow changes needed:
+        - Auto clock-in when selecting the Tech name if not clocked-in
+        - No clock in button needed anymore
+        - When clicking the Break Start/Stop and Clock out execute immedately (right now the flow is broken I need to double click it)
+        - Submit and Close button no longer needed 
+            - Submit not needed with new flow
+            - Clock-in flow, Break Start/Stop and Clock-Out should close by itself
+            - Clicking outside modal should close too
+    Improvements:
+    - Service change:
+        - new feature: isDefault - all basic service all techs can do
+            - the skill checkbox is auto checked for every existing tech on creation
+            - the skill checkbox is auto checked when creating new tech
+            - allow manual override, do not hardcode it
+    - Move the new day checklist above the recommendations
+        - expected behavior: dissapears after all checkboxes checked
+    - Close Day Summary changes:
+        - Two filter modes:
+            - current, and then filter ascending rowid
+            - switch when clicking the name column header
+        - Add Total sum for the Value, After Adjustment, Adjustments columns
+        - After day closed still allow to reopen the summary page
+
+Phase 8.2: QoL Display Changes
+    - Seating Display
+        - Changes to improve the closing flow:
+            - when open, double click to open seat closing modal
+                Seat Closing Modal (new)
+                - value input box: autofocus there for quick value input
+                - allow submit by pressing enter
+                - auto check value adjustment checkbox if the value is not divisible by 5
+            - when open, hold the seat for seat editing
+                - allow edit to short_name
+                - allow edit time_needed
+                - allow edit type isRequested - remember to recalculate the turn types
+            - when closed, double click to view details
+                - allow changes to value adjustment checkbox
+                - allow changes to isRequested checkbox - recalculate the turn types
+        - Make the details into one row, make padding smaller, I want the seating display more compact
+    - Day Row
+        - double click on rowid column or any empty seating column to add seating to chosen tech
+        - Remove action column
+
+Phase 8.3: QoL QuickActionBar
+    New QuickActionBar to improve the work flow
+    - Lookup tech name, then click to open the seating
+    - Open Seatings bar with tech name filter
+    - From left: Input to lookup by tech name to open seating. Input to filter the tech name for Open Seatings bar. Open seatings bar with Name + Seating Display

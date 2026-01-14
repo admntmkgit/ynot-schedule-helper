@@ -2,7 +2,7 @@
  * Day Table Component
  * Displays daily schedule with technicians and their seatings
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import NewSeatingModal from './NewSeatingModal';
 import SeatingModal from './SeatingModal';
 import TechProfile from './TechProfile';
@@ -23,6 +23,7 @@ function DayTable({ dayData, onDayUpdate }) {
     const [displayTurns, setDisplayTurns] = useState(false);
     const [servicesMap, setServicesMap] = useState({});
     const [servicesInfo, setServicesInfo] = useState({});
+    const clickTimerRef = useRef(null);
     
     const SEATINGS_PER_PAGE = 11;
 
@@ -128,19 +129,29 @@ function DayTable({ dayData, onDayUpdate }) {
         const slots = Array(totalColumns).fill(null);
         if (!seatings || seatings.length === 0) return slots;
 
-        // Place regular seatings left-to-right, bonus seatings right-to-left
-        // Preserve iteration order but place according to type
-        seatings.forEach(seating => {
-            if (seating?.is_bonus) {
-                // find rightmost empty slot
-                for (let j = totalColumns - 1; j >= 0; j--) {
-                    if (!slots[j]) { slots[j] = seating; break; }
-                }
-            } else {
-                // find leftmost empty slot
-                for (let j = 0; j < totalColumns; j++) {
-                    if (!slots[j]) { slots[j] = seating; break; }
-                }
+        // Phase 9.2: Frontend computes visual placement from persisted seatings list
+        // Regular turns: laid out left-to-right in their sequence
+        // Bonus turns: laid out right-to-left in their sequence
+        
+        // Separate regular and bonus seatings while preserving order
+        const regularSeatings = seatings.filter(s => s && !s.is_bonus);
+        const bonusSeatings = seatings.filter(s => s && s.is_bonus);
+
+        // Place regular seatings left-to-right
+        let leftIndex = 0;
+        regularSeatings.forEach(seating => {
+            if (leftIndex < totalColumns) {
+                slots[leftIndex] = seating;
+                leftIndex++;
+            }
+        });
+
+        // Place bonus seatings right-to-left
+        let rightIndex = totalColumns - 1;
+        bonusSeatings.forEach(seating => {
+            if (rightIndex >= leftIndex) {
+                slots[rightIndex] = seating;
+                rightIndex--;
             }
         });
 
@@ -158,8 +169,42 @@ function DayTable({ dayData, onDayUpdate }) {
         return { startIndex, endIndex };
     };
 
+    const handleSeatingSingleClick = (seating, tech) => {
+        if (!seating) return;
+        if (dayData.status !== 'open') return;
+        // Only allow single-click to open close modal for OPEN seatings (value === 0)
+        const isOpen = seating.value === 0;
+        if (!isOpen) return; // Don't open modal for closed seatings on single-click
+        // start a short timer; if double-click occurs, it'll clear this
+        if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+        clickTimerRef.current = setTimeout(() => {
+            setSelectedSeating({ ...seating, tech });
+            setShowSeatingModal(true);
+            clickTimerRef.current = null;
+        }, 220);
+    };
+
+    const handleSeatingDoubleClick = (seating, tech) => {
+        if (!seating) return;
+        if (clickTimerRef.current) {
+            clearTimeout(clickTimerRef.current);
+            clickTimerRef.current = null;
+        }
+        const isOpen = seating.value === 0;
+        // Allow edit mode for open seatings on day open, or for closed seatings anytime (to edit penalty)
+        if (isOpen && dayData.status !== 'open') return; // Can't edit open seatings if day is not open
+        // open modal in edit mode
+        setSelectedSeating({ ...seating, tech, editMode: true });
+        setShowSeatingModal(true);
+    };
+
     const renderSeatingCell = (seating, tech) => {
-        if (!seating) return <td key={Math.random()} className="seating-cell empty"></td>;
+        if (!seating) return (
+            <td key={Math.random()} className="seating-cell empty clickable" onDoubleClick={() => {
+                if (tech.is_on_break || dayData.status !== 'open' || tech.is_active === false) return;
+                handleNewSeating(tech);
+            }} title="Double-click to add seating"></td>
+        );
 
         const isOpen = seating.value === 0;
         const elapsed = elapsedTimes[seating.id] || 0;
@@ -167,28 +212,24 @@ function DayTable({ dayData, onDayUpdate }) {
             <td 
                 key={seating.id} 
                 className={`seating-cell ${isOpen ? 'open' : 'closed'} ${seating.is_requested ? 'requested' : 'walkin'} ${seating.is_bonus ? 'bonus' : 'regular'}`}
-                onDoubleClick={() => handleSeatingClick(seating, tech)}
+                onClick={(e) => { e.stopPropagation(); handleSeatingSingleClick(seating, tech); }}
+                onDoubleClick={(e) => { e.stopPropagation(); handleSeatingDoubleClick(seating, tech); }}
                 title={`${seating.service} - ${isOpen ? 'Open' : 'Closed'} - ${seating.is_requested ? 'Requested' : 'Walk-in'} - ${seating.is_bonus ? 'Bonus' : 'Regular'}`}
             >
-                <div className="seating-content">
-                    {/* First row: badges (Requested R, Value penalty V for closed) */}
-                    <div className="seating-badges">
+                <div className="seating-content compact">
+                    <div className="seating-compact-row">
                         {seating.is_requested && (
                             <span className="seating-requested-badge">R</span>
                         )}
                         {!isOpen && seating.has_value_penalty && (
                             <span className="seating-penalty">V</span>
                         )}
-                    </div>
-
-                    {/* Second row: show short_name always, then elapsed (open) or value (closed) */}
-                    <div className="seating-short inline">
                         <span className="seating-shortname">{seating.short_name || servicesMap[seating.service] || seating.service}</span>
                         {isOpen ? (
                             (() => {
                                 const svc = seating.service;
                                 const info = servicesInfo[svc] || {};
-                                const timeNeeded = info.time_needed || 0;
+                                const timeNeeded = seating.time_needed || info.time_needed || 0;
                                 let elapsedClass = '';
                                 if (timeNeeded > 0) {
                                     if (elapsed > timeNeeded) elapsedClass = 'elapsed-over';
@@ -236,7 +277,7 @@ function DayTable({ dayData, onDayUpdate }) {
                             <th className="col-row-number">#</th>
                             <th className="col-tech-alias">Alias</th>
                                     {displayName && <th className="col-tech-name">Name</th>}
-                            <th className="col-action">Action</th>
+                            {/* action column removed per Phase 9.3 - double-click row number or empty cell to add seating */}
                             {Array.from({ length: Math.min(SEATINGS_PER_PAGE, getSeatingColumnCount() - startIndex) }).map((_, i) => (
                                 <th key={i} className="col-seating">
                                     {startIndex + i + 1}
@@ -252,8 +293,11 @@ function DayTable({ dayData, onDayUpdate }) {
                     </thead>
                     <tbody>
                         {preparedRows.map((row, rowIndex) => (
-                            <tr key={row.row_number} className={`day-row ${rowIndex % 2 === 0 ? 'even' : 'odd'} ${row.is_on_break ? 'on-break' : ''}`}>
-                                <td className="col-row-number">{row.row_number}</td>
+                            <tr key={row.row_number} className={`day-row ${rowIndex % 2 === 0 ? 'even' : 'odd'} ${row.is_on_break ? 'on-break' : ''} ${row.is_active === false ? 'inactive' : ''}`}>
+                                <td className="col-row-number clickable" onDoubleClick={() => {
+                                    if (row.is_on_break || dayData.status !== 'open' || row.is_active === false) return;
+                                    handleNewSeating(row);
+                                }}>{row.row_number}</td>
                                         <td 
                                             className="col-tech-alias clickable" 
                                             onDoubleClick={() => handleTechClick(row)}
@@ -264,16 +308,7 @@ function DayTable({ dayData, onDayUpdate }) {
                                         {displayName && (
                                             <td className="col-tech-name" title={row.tech_name}>{row.tech_name}</td>
                                         )}
-                                <td className="col-action">
-                                    <button 
-                                        className="btn-new-seating"
-                                        onClick={() => handleNewSeating(row)}
-                                        disabled={row.is_on_break || dayData.status !== 'open'}
-                                        title={row.is_on_break ? 'Tech is on break' : 'Add new seating'}
-                                    >
-                                        +
-                                    </button>
-                                </td>
+                                {/* Action button removed - use double-click on row number or empty cell */}
                                 {Array.from({ length: Math.min(SEATINGS_PER_PAGE, totalColumns - startIndex) }).map((_, i) => {
                                     const seatingIndex = startIndex + i;
                                     const seating = row.slots ? row.slots[seatingIndex] : null;
@@ -361,6 +396,7 @@ function DayTable({ dayData, onDayUpdate }) {
                         setSelectedSeating(null);
                     }}
                     onSuccess={onDayUpdate}
+                    editMode={selectedSeating?.editMode === true}
                 />
             )}
 

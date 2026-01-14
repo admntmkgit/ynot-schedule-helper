@@ -53,7 +53,7 @@ function RecommendationWidget({
         }
     };
 
-    const handleTitleDoubleClick = () => {
+    const handleTitleClick = () => {
         setExpanded(!expanded);
     };
 
@@ -82,7 +82,7 @@ function RecommendationWidget({
         <div className={`recommendation-widget ${expanded ? 'expanded' : ''}`}>
             <div 
                 className="widget-title" 
-                onDoubleClick={handleTitleDoubleClick}
+                onClick={handleTitleClick}
             >
                 {title}
                 <span className="expand-indicator">{expanded ? '▼' : '▶'}</span>

@@ -7,8 +7,10 @@ import './NavBar.css';
 import OptionsModal from './OptionsModal';
 import TechTimeDropdown from './TechTimeDropdown';
 import DeleteModal from './DeleteModal';
+import CloseDaySummaryModal from './CloseDaySummaryModal';
 import ActiveDayContext from '../context/ActiveDayContext';
 import { dayService } from '../services';
+import api from '../services/api';
 
 function NavBar() {
     const [showOptions, setShowOptions] = useState(false);
@@ -22,6 +24,7 @@ function NavBar() {
     const [dayError, setDayError] = useState('');
 
     const { createDay, openDay } = useContext(ActiveDayContext);
+    const { activeDay, refreshActiveDay } = useContext(ActiveDayContext);
 
     const handleTechTimeSuccess = () => {
         setShowTechTime(false);
@@ -31,6 +34,31 @@ function NavBar() {
         setShowDelete(false);
         alert(`Day ${deletedDate} has been permanently deleted.`);
     };
+
+    const [showCloseDaySummary, setShowCloseDaySummary] = useState(false);
+    const [endingDay, setEndingDay] = useState(false);
+
+    const handleEndDay = async () => {
+        if (!activeDay || activeDay.status !== 'open') return;
+
+        if (!confirm('Are you sure you want to end this day? This will activate the end-of-day checklist.')) {
+            return;
+        }
+
+        setEndingDay(true);
+
+        try {
+            await api.post(`/days/${activeDay.date}/end-day/`);
+            await refreshActiveDay();
+        } catch (err) {
+            console.error('Failed to end day:', err);
+            alert(`Failed to end day: ${err.message}`);
+        } finally {
+            setEndingDay(false);
+        }
+    };
+
+    const handleOpenCloseDaySummary = () => setShowCloseDaySummary(true);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -116,6 +144,30 @@ function NavBar() {
                         Delete Day
                     </button>
                 </div>
+                <div className="navbar-day">
+                    {activeDay ? (
+                        <div className="day-block">
+                            <div className="day-actions">
+                                {activeDay.status === 'open' && (
+                                    <button className="navbar-button btn-accent" onClick={handleEndDay} disabled={endingDay}>{endingDay ? 'Ending...' : 'End Day'}</button>
+                                )}
+                                {activeDay.status === 'ended' && (
+                                    <button className="navbar-button btn-accent" onClick={handleOpenCloseDaySummary}>Close Day</button>
+                                )}
+                                {activeDay.status === 'closed' && (
+                                    <button className="navbar-button btn-secondary" onClick={handleOpenCloseDaySummary}>View Summary</button>
+                                )}
+                            </div>
+
+                            <div className="day-info-wrapper">
+                                <div className="day-label">Day: {activeDay.date}</div>
+                                <div className={`status-badge status-${activeDay.status}`}>{activeDay.status.toUpperCase()}</div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="day-label">No active day</div>
+                    )}
+                </div>
             </nav>
 
             {showOptions && <OptionsModal onClose={() => setShowOptions(false)} />}
@@ -183,6 +235,17 @@ function NavBar() {
                         </div>
                     </div>
                 </div>
+            )}
+            {showCloseDaySummary && (
+                <CloseDaySummaryModal
+                    isOpen={showCloseDaySummary}
+                    onClose={() => setShowCloseDaySummary(false)}
+                    dayData={activeDay}
+                    onDayClosed={async () => {
+                        await refreshActiveDay();
+                        setShowCloseDaySummary(false);
+                    }}
+                />
             )}
         </>
     );

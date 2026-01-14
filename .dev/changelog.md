@@ -7,6 +7,172 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 9.4 Implementation - 2026-01-13
+
+#### Changed - Phase 9.4: Quick Action Bar Layout Improvements
+- Tech lookup section enhancements:
+  - Added "Quick New Seating" label above search input
+  - Converted select dropdown to conditional div-based dropdown
+  - Dropdown now only appears when user types in search field
+  - Uses absolute positioning to avoid resizing the Quick Action Bar
+  - Improved visual hierarchy with styled label
+  - Click-to-select tech option triggers immediate modal opening
+  - Auto-closes dropdown after selection
+
+#### Technical Details
+- Modified: `frontend/src/components/QuickActionBar.jsx`
+  - Removed `handleTechSelect` function
+  - Inline click handler for tech options
+  - Conditional rendering based on search input
+- Modified: `frontend/src/components/QuickActionBar.css`
+  - Added `.tech-lookup-label` styling
+  - Added `.tech-dropdown` with absolute positioning
+  - Added `.tech-option` hover effects
+  - Positioned dropdown with `z-index: 1000` and shadow
+
+#### Fixed - Phase 9.4: Quick Action Bar Bug Fix
+- Fixed seating structure in QuickActionBar for SeatingModal compatibility:
+  - Changed seating object structure from flat `tech_alias`/`tech_name` to nested `tech` object
+  - SeatingModal now correctly receives `seating.tech.tech_alias` and `seating.tech.tech_name`
+  - Resolved "Cannot read properties of undefined (reading 'tech_alias')" error
+  - Updated filter logic to use nested structure: `seating.tech.tech_alias`
+
+#### Added - Phase 9.4: Quick Action Bar
+- New secondary navbar positioned below main Navbar for rapid tech/seating workflow:
+  - **Tech Lookup Dropdown**: 
+    - Searchable dropdown by tech alias or name
+    - Displays filtered tech list in real-time
+    - Validates tech is clocked in before opening New Seating Modal
+    - Opens New Seating Modal with selected tech pre-filled
+    - Auto-clears search and selection after use
+  - **Open Seatings Filter**: 
+    - Text input to filter open seatings by tech alias/name
+    - Real-time filtering of the open seatings panel
+  - **Open Seatings Panel**: 
+    - Horizontal scrollable list of all current open seatings
+    - Displays: tech alias, service short_name, elapsed time
+    - Sorted by creation time (oldest first)
+    - Click any seating to open Seat Closing Modal
+    - Empty state message when no open seatings exist
+    - Respects `is_active` flag (only shows seatings for active techs)
+  
+- Component features:
+  - Only displays when an active day is loaded
+  - Auto-refreshes elapsed time every minute
+  - Integrates with existing modal workflows
+  - Uses theme colors and styling consistent with app design
+
+#### Technical Details
+- Added: `frontend/src/components/QuickActionBar.jsx` - Main component
+- Added: `frontend/src/components/QuickActionBar.css` - Styling with theme colors
+- Modified: `frontend/src/components/Layout.jsx` - Integrated QuickActionBar below NavBar
+- Component uses ActiveDayContext for day data and refresh functionality
+- Loads services map for short_name display
+- Calculates elapsed time matching DayTable logic
+
+### Phase 9.2 Implementation - 2026-01-14
+
+#### Changed - Phase 9.2: Seating Display Logic Rework
+- Frontend:
+  - Seating placement logic reworked in DayTable:
+    - Updated `computeRowSlots()` to properly sequence regular and bonus turns
+    - Regular turns are now laid out left-to-right in their persisted sequence
+    - Bonus turns are now laid out right-to-left in their persisted sequence
+    - Frontend computes visual placement from `DayRow.seatings` list each render
+    - Placement recalculated whenever day-row is modified (add/edit/delete seating)
+  - No schema migration needed - compatible with current persistence format
+  
+- Backend:
+  - Verified existing seating persistence logic:
+    - `DayRow.seatings` remains the authoritative, ordered list
+    - Create endpoint appends to seatings list and updates turn counters
+    - Delete endpoint removes from seatings list and decrements turn counters
+    - Server only persists the sequence as-is (no placement logic)
+
+#### Technical Details
+- Modified: `frontend/src/components/DayTable.jsx` - Updated `computeRowSlots()` function
+- Regular seatings fill columns from left (index 0) moving right
+- Bonus seatings fill columns from right (last index) moving left
+- Placement preserves the order in which seatings were created for each type
+
+### Phase 9.1.1 Implementation - 2026-01-14
+
+#### Fixed - Phase 9.1.1: Critical Bug Fixes
+- Backend:
+  - Service name uniqueness validation:
+    - Added `validate_name()` method to `ServiceSerializer`
+    - Prevents duplicate service names on creation
+    - Returns validation error: "Service with name '{name}' already exists"
+  - Validated existing tech alias uniqueness still works properly
+
+- Frontend:
+  - Clock-out functionality completely fixed:
+    - `getTechRow()` now filters by `is_active` field in addition to alias match
+    - Clocked-out techs (with `is_active=false`) no longer appear as clocked in
+    - Clock Out button hidden for inactive/clocked-out techs
+    - Break Start/Stop buttons hidden for inactive/clocked-out techs
+    - Tech Time dropdown only lists active techs for actions
+  - Improved error message display for validation errors:
+    - TechProfile and ServiceProfile now parse DRF field validation errors
+    - Extracts specific error messages from `{field: [messages]}` structure
+    - Displays user-friendly errors like "Service with name 'X' already exists"
+    - Replaced generic "Failed to save: API request failed" with specific field errors
+
+#### Changed
+- `backend/services/serializers.py`: Added `validate_name()` method for uniqueness check
+- `frontend/src/components/TechTimeDropdown.jsx`: Filter by `is_active` when determining clocked-in status
+- `frontend/src/components/TechProfile.jsx`: Enhanced error extraction from API responses
+- `frontend/src/components/ServiceProfile.jsx`: Enhanced error extraction from API responses
+
+### Phase 9.1 Implementation - 2026-01-14
+
+#### Added - Phase 9.1: Bug Fixes & Core Improvements
+- Backend:
+  - Tech alias uniqueness validation:
+    - Added `validate_alias()` method to `TechnicianSerializer`
+    - Prevents duplicate tech aliases on creation
+    - Returns validation error: "Technician with alias '{alias}' already exists"
+  - Service `is_default` field with auto-assignment:
+    - Added `is_default` boolean field to Service model
+    - Created migration `0003_service_is_default.py`
+    - Services marked as default auto-assign to all existing techs on creation
+    - New techs automatically receive all default services
+    - Manual skill override still allowed (not hardcoded)
+  - Updated `ServiceSerializer.create()` and `update()` to handle `is_default` logic
+  - Updated `TechnicianSerializer.create()` to auto-assign default services to new techs
+
+- Frontend:
+  - Tech Time modal improvements ([TechTimeDropdown.jsx](../frontend/src/components/TechTimeDropdown.jsx)):
+    - Auto clock-in: Selecting a tech automatically clocks them in if not already clocked in
+    - Removed standalone "Clock In" button (auto-handled on select)
+    - Immediate action execution: Break Start/Stop and Clock Out execute immediately on click
+    - Auto-dismiss: Modal closes automatically after successful action
+    - Removed "Submit" button (all actions now immediate)
+  - Sidebar layout order correction ([Sidebar.jsx](../frontend/src/components/Sidebar.jsx)):
+    - New Day Checklist → Recommendation Widgets → End Day Checklist
+    - Ensures proper visibility flow during day lifecycle
+  - Close Day Summary enhancements ([CloseDaySummaryModal.jsx](../frontend/src/components/CloseDaySummaryModal.jsx)):
+    - Sort toggle: Click "Technician" header to toggle between name sort and row number sort
+    - Column totals: Added totals row showing total Value, After Adjustment, and Adjustments
+    - View-only mode: Summary can be reopened for closed days
+    - Added "View Summary" button for closed days ([HomePage.jsx](../frontend/src/pages/HomePage.jsx))
+
+#### Changed
+- `backend/services/models.py`: Added `is_default` field
+- `backend/services/serializers.py`: Implemented auto-assignment logic
+- `backend/technicians/serializers.py`: Added alias validation and default service assignment
+- `frontend/src/components/TechTimeDropdown.jsx`: Streamlined UX with auto-actions
+- `frontend/src/components/Sidebar.jsx`: Corrected render order
+- `frontend/src/components/CloseDaySummaryModal.jsx`: Enhanced with sort and totals
+- `frontend/src/pages/HomePage.jsx`: Added View Summary button for closed days
+
+#### Testing
+- Verified tech alias uniqueness via API (400 BadRequest on duplicate)
+- Verified `is_default` auto-assignment to existing and new techs
+- Docker build and deployment successful
+- Migration `services.0003_service_is_default` applied successfully
+- See [phase_9.1_summary.md](phase_9.1_summary.md) for detailed test results
+
 ### Phase 8 Implementation - 2026-01-07
 
 #### Added - Phase 8: Checklists & Day End

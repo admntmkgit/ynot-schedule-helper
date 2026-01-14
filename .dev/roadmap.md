@@ -319,7 +319,7 @@ Phase 8: Checklists & Day End **IMPLEMENTED**
     - Deliverable: Complete checklist system and day close workflow
 
 
-Phase 9: Tech Recommendation Engine
+Phase 9: Tech Recommendation Engine **IMPLEMENTED**
     - Overview: Provide always-visible recommendation widgets and configurable service-specific recommendation widgets. Recommendations support both Regular and Bonus turn suggestions and fast UI actions (double-click to expand / select).
     - Backend: Implement scheduling suggestion algorithm with 4-priority logic (used for detailed recommendations):
         1. Tech availability (no open seating OR open seating with more than 70% time passed)
@@ -349,7 +349,7 @@ Phase 9: Tech Recommendation Engine
 
 ---
 
-Phase 9.1: Bug Fixes & Core Improvements & Consistency Fixes
+Phase 9.1: Bug Fixes & Core Improvements & Consistency Fixes **IMPLEMENTED**
     Bugs:
     - Tech alias validation: enforce uniqueness to prevent backend errors
     - Tech Time modal: eliminate double-click behavior and improve responsiveness
@@ -372,38 +372,95 @@ Phase 9.1: Bug Fixes & Core Improvements & Consistency Fixes
         - Toggle between "Current - Sorted by Alias then Name" and "Sorted by RowID from DayTable" filter modes via alias column header click
         - Display column totals for: Value, After Adjustment, Adjustments
         - Allow reopening summary view after day closure
-    
-    Consistency Fixes:
-    - Clarify turn calculation for `is_default` services: bonus turn logic applies at the seating level (isBonus checkbox determined by service.is_bonus and request order), not at service definition level
-    - Recommendation engine "row number priority" (Phase 9) refers to the tech's DayRow position in the day table (lower row number = higher priority)
-    - Day row numbering: immutable based on clock-in order; re-ordering not supported
 
-Phase 9.2: Seating Display & Layout Optimization
-    Seating interactions (streamline closing workflow):
-    - Open seatings: double-click to open Seat Closing Modal (new)
-        - Autofocus value input field for rapid entry
-        - Submit via Enter key
-        - Auto-check value adjustment if value is not divisible by 5
-            - Value adjustment logic: checkbox applies fixed -3 adjustment; validation in Phase 9.2 (divisible by 5) is a UI helper for data entry, not a business rule
-            - allow manual check/uncheck
-    - Open seatings: long-press/hold to edit details
-        - Editable fields: service short_name, time_needed, isRequested toggle
-        - Auto-recalculate turn types on changes
-        - Remove the value input and closing button - we will be doing it in the separate modal
-    - Closed seatings: double-click to view/adjust details
-        - Editable: value adjustment checkbox, isRequested toggle
-        - Close the modal after checkbox toggle
-        - Auto-recalculate turn types on changes
+**IMPLEMENTED** Phase 9.1.1 [COMPLETE] **IMPLEMENTED**
+    Fixed Bugs:
+    ✅ Services name validation: Added uniqueness validation in ServiceSerializer
+    ✅ Improved error messages in frontend for duplicate Tech Alias and Service Name
+      - Now extracts DRF validation errors (field: [messages]) and displays them
+      - Example: "Service with name 'X' already exists" instead of generic "API request failed"
+    ✅ Clock-Out errors fixed:
+      - Frontend now checks is_active field when determining if tech is clocked in
+      - Clocked-out techs (is_active=false) no longer appear as clocked in
+      - Clock Out and Break buttons hidden for inactive techs
+      - Tech Time dropdown only shows active (clocked-in) techs as available for actions
+    Implementation:
+    - Backend: Added validate_name() method to ServiceSerializer (backend/services/serializers.py)
+    - Frontend: Updated getTechRow() to check row.is_active (frontend/src/components/TechTimeDropdown.jsx)
+    - Frontend: Improved error extraction in TechProfile and ServiceProfile to parse DRF validation errors
+    Bug:
+    Clock-out doesn't disable the tech's dayrow
+
+**IMPLEMENTED** Phase 9.2: Seating Display Logic Rework **IMPLEMENTED**
+
+Backend: Persist Seating Sequence (requirements)
+- Keep `DayRow.seatings` as the authoritative, ordered list persisted to the day JSON file.
+- Do not add explicit per-seating slot indices or allow server-side reordering endpoints — the server should only persist the sequence as-is.
+- When a new seating is created via existing `/api/days/{date}/seatings` endpoint, append it to the corresponding `DayRow.seatings` list and update `regular_turns`/`bonus_turns` counters based on the seating's `is_bonus` flag.
+- On seating delete/close, remove the seating from the `DayRow.seatings` list and decrement the appropriate turn counter.
+- Accept full `DayData` updates (or a dedicated row-level replace) for clients that send the updated `seatings` array; validate incoming seating objects server-side before persisting.
+
+Frontend: Placement & Display (behavior)
+- Frontend computes visual placement from the persisted `DayRow.seatings` list each render: regular turns are laid out left-to-right, bonus turns right-to-left.
+- Frontend recalculates placement whenever a day-row is modified (add/edit/delete seating) to preserve current layout semantics without server involvement.
+- No backend placement logic: backend only stores the sequence; visual placement rules live in the frontend.
+
+Notes & Migration
+- Existing day files already use `seatings` arrays; this approach is compatible with current persistence format and requires no schema migration.
+- Concurrency: document that clients should POST incremental changes (create/delete) or push full row `seatings` arrays; servers will overwrite the persisted list with the validated payload.
+
+**IMPLEMENTED** Phase 9.2.1 [FIXED]
+Placement not behaving as intended: 
+ - The seating placement doesn't change, although I deleted the seating (I want it to update after modification)
+   - Jojo had this array: [0: Regular Seating, 1: Requested Seating 1, 2: Requested Seating 2]
+    - The placement was right for this. Seat 0 and 1 on the left, Seat 2 on the right
+    - I deleted Requested Seat 1, so array became [0: Regular Seating, 1: Requested Seating 2]
+    - The placement shoud be Seat 0 and Requested Seating 2 on the left, but Requested seating 2 stayed on the right
+
+**IMPLEMENTED** Phase 9.3: Seating Display & Layout Optimization
     Day table refinements:
     - Compact seating display: merge details to single row, minimize padding
     - Add seating: double-click row ID or empty seating cell to add seating for that tech
     - Remove action column
+    Seating interactions (streamline closing workflow):
+    - Open seatings: single-click to open Seat Closing Modal (new)
+        - Autofocus value input field for rapid entry
+        - Submit via Enter key
+        - Auto-check value adjustment if value is not divisible by 5
+            - Value adjustment logic: checkbox applies fixed -3 adjustment; validation in Phase 9.3 (divisible by 5) is a UI helper for data entry, not a business rule
+            - allow manual check/uncheck
+    - Open seatings: double-click to edit details
+        - Editable fields: service short_name, time_needed, isRequested toggle
+        - Auto-recalculate turn types on changes
+        - Remove the value input and closing button - we will be doing it in the separate modal
+    - Closed seatings: double-click to view/adjust details
+        - toggleable: value adjustment checkbox, isRequested checkbox
+        - Update and close the modal after any checkbox toggle
+        - Auto-recalculate turn types on changes
+    Recommendation Sidebar:
+    - Make it more compact, less padding, the spaces between lines are too big, keep the fontsize same
+    - Right now: double-click to expand the recommendation list - change to a single click
 
-Phase 9.3: Quick Action Bar
-    New sidebar widget for rapid tech/seating workflow:
-    - Tech lookup input: search by alias or name to quickly open seatings for selected tech
-    - Open seatings filter input: filter displayed seatings by tech alias/name
-    - Open seatings panel: horizontal scrollable list of current seatings (tech alias + seating display), ordered by time created
+**IMPLEMENTED** Phase 9.4: Quick Action Bar
+    New secondary navbar widget for rapid tech/seating workflow (positioned below main Navbar):
+    - Tech lookup dropdown: searchable dropdown (by alias or name) to quickly add a seating for selected tech
+        - Select tech → opens New Seating Modal pre-filled with that tech
+        - Clear visual search/filter behavior
+    - Open seatings filter: text input to filter the panel next by tech alias/name
+    - Open seatings panel: horizontal scrollable list showing all current open seatings (tech alias + seating display)
+        - Sorted by time created (oldest first)
+        - Click seating to open Seat Closing Modal (consistent with Phase 9.3 behavior)
+        - Shows: tech alias, service short_name, elapsed time
+        - Empty state message when no open seatings exist
+
+
+**IMPLEMENTED** Phase 9.5 [COMPLETE]: Minor UI improvements and bug fixes
+    - Moved the Day header and action buttons into the Main Navbar:
+        - Current Day display with open/ended/closed status badge
+        - Buttons: End Day, Close Day, View Summary (actions now in `NavBar`)
+    - Fixed summary sorting/filter by row id: backend summary now includes `row_number` so the Close Day Summary can sort by row number correctly.
+    - Changes tested by building and running the Docker stack; backend summary endpoint verified for `2026-01-07`.
+
 
 ---
 

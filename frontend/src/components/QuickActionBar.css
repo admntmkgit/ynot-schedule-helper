@@ -1,0 +1,196 @@
+/**
+ * Phase 9.4: Quick Action Bar Styles
+ * Styling for the secondary navbar with tech lookup and open seatings
+ */
+
+.quick-action-bar {
+    background: var(--color-primary);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.quick-action-left {
+    display: flex;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.tech-lookup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 200px;
+    position: relative;
+}
+
+.tech-lookup-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.125rem;
+}
+
+.tech-search-input {
+    padding: 0.4rem 0.6rem;
+    background: rgba(22, 33, 62, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+}
+
+.tech-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.tech-search-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.tech-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-secondary);
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    margin-top: 0.25rem;
+}
+
+.tech-option {
+    padding: 0.5rem 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.tech-option:last-child {
+    border-bottom: none;
+}
+
+.tech-option:hover {
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.tech-option.highlighted {
+    background: rgba(212, 175, 55, 0.18);
+}
+
+.tech-select {
+    padding: 0.4rem 0.6rem;
+    background: rgba(22, 33, 62, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.tech-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.tech-select option {
+    background: var(--color-secondary);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.open-seatings-filter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 200px;
+}
+
+.filter-input {
+    padding: 0.4rem 0.6rem;
+    background: rgba(22, 33, 62, 0.6);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+}
+
+.quick-input {
+    width: 200px;
+    max-width: 200px;
+}
+
+.filter-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.open-seatings-panel {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.seatings-list {
+    display: flex;
+    gap: 0.75rem;
+    min-width: max-content;
+}
+
+.seating-item {
+    padding: 0.5rem 0.75rem;
+    background: rgba(22, 33, 62, 0.8);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 100px;
+}
+
+.seating-item:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
+.seating-tech {
+    font-weight: 600;
+    color: var(--color-accent);
+    font-size: 0.875rem;
+}
+
+.seating-service {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.8rem;
+}
+
+.seating-time {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.empty-state {
+    padding: 0.75rem 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    text-align: center;
+    font-size: 0.875rem;
+}

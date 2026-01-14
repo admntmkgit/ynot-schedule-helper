@@ -7,6 +7,7 @@ class Service(models.Model):
     time_needed = models.IntegerField(help_text="Time needed in minutes")
     short_name = models.CharField(max_length=50, blank=True, default='', help_text="Short display name for UI")
     is_bonus = models.BooleanField(default=False, help_text="Whether this service counts as a bonus turn")
+    is_default = models.BooleanField(default=False, help_text="Auto-assign to all techs (can be manually overridden)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

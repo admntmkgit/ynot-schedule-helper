@@ -406,21 +406,19 @@ class DayViewSet(viewsets.ViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Determine if this is a bonus turn
-            is_bonus = self._determine_bonus_turn(row, is_requested, service.is_bonus)
-            
             # Create the seating (include service short_name for UI)
             from .models import Seating
             new_seating = Seating(
                 is_requested=is_requested,
-                is_bonus=is_bonus,
+                is_bonus=False,
                 service=service_name,
                 short_name=service.short_name
             )
-            
-            # Add seating to row
+
+            # Add seating to row then recompute turn types for entire row
             row.add_seating(new_seating)
-            
+            self._recompute_row_turns(row)
+
             # Save the updated day
             day_persistence.save(day_data)
             
@@ -454,6 +452,43 @@ class DayViewSet(viewsets.ViewSet):
         else:
             # For walk-ins, use the service's is_bonus flag
             return service_is_bonus
+
+    def _recompute_row_turns(self, row):
+        """
+        Recompute `is_bonus` flags for all seatings in `row.seatings` and
+        update `regular_turns` / `bonus_turns` accordingly.
+
+        Rules:
+        - Requested seatings alternate: 1st requested = regular, 2nd = bonus, etc.
+        - Walk-ins use their service.is_bonus flag.
+        """
+        from services.models import Service
+
+        requested_seen = 0
+        regular_count = 0
+        bonus_count = 0
+
+        for idx, seating in enumerate(row.seatings):
+            if seating.is_requested:
+                # Alternate requested seatings: first = regular (False), second = bonus (True)
+                is_bonus = (requested_seen % 2 == 1)
+                seating.is_bonus = bool(is_bonus)
+                requested_seen += 1
+            else:
+                # Walk-ins follow service.is_bonus
+                try:
+                    svc = Service.objects.get(name=seating.service)
+                    seating.is_bonus = bool(svc.is_bonus)
+                except Service.DoesNotExist:
+                    seating.is_bonus = False
+
+            if seating.is_bonus:
+                bonus_count += 1
+            else:
+                regular_count += 1
+
+        row.regular_turns = regular_count
+        row.bonus_turns = bonus_count
 
     @action(detail=True, methods=['put'], url_path='seatings/(?P<seating_id>[^/.]+)/update')
     def update_seating(self, request, pk=None, seating_id=None):
@@ -499,39 +534,7 @@ class DayViewSet(viewsets.ViewSet):
                 target_seating.has_value_penalty = bool(request.data['has_value_penalty'])
             
             if 'is_requested' in request.data:
-                old_is_requested = target_seating.is_requested
                 target_seating.is_requested = bool(request.data['is_requested'])
-                
-                # If is_requested changed, recalculate is_bonus
-                if old_is_requested != target_seating.is_requested:
-                    from services.models import Service
-                    service = Service.objects.get(name=target_seating.service)
-                    
-                    # Temporarily remove this seating to recalculate
-                    temp_seatings = [s for s in target_row.seatings if s.id != seating_id]
-                    temp_row = type(target_row)(
-                        row_number=target_row.row_number,
-                        tech_alias=target_row.tech_alias,
-                        tech_name=target_row.tech_name,
-                        seatings=temp_seatings
-                    )
-                    
-                    new_is_bonus = self._determine_bonus_turn(
-                        temp_row, 
-                        target_seating.is_requested, 
-                        service.is_bonus
-                    )
-                    
-                    # Update turn counts if is_bonus changed
-                    if target_seating.is_bonus != new_is_bonus:
-                        if target_seating.is_bonus:
-                            target_row.bonus_turns = max(0, target_row.bonus_turns - 1)
-                            target_row.regular_turns += 1
-                        else:
-                            target_row.regular_turns = max(0, target_row.regular_turns - 1)
-                            target_row.bonus_turns += 1
-                    
-                    target_seating.is_bonus = new_is_bonus
             
             if 'service' in request.data:
                 from services.models import Service, TechSkill
@@ -555,7 +558,18 @@ class DayViewSet(viewsets.ViewSet):
                 
                 target_seating.service = new_service_name
                 target_seating.short_name = service.short_name
-            
+            # Allow per-seating short_name and time_needed overrides
+            if 'short_name' in request.data:
+                target_seating.short_name = request.data.get('short_name') or ''
+
+            if 'time_needed' in request.data:
+                try:
+                    target_seating.time_needed = int(request.data.get('time_needed'))
+                except Exception:
+                    target_seating.time_needed = None
+            # After any seating edit that might affect turn types, recompute the whole row
+            self._recompute_row_turns(target_row)
+
             # Save the updated day
             day_persistence.save(day_data)
             
@@ -601,6 +615,9 @@ class DayViewSet(viewsets.ViewSet):
                 removed = row.remove_seating(seating_id)
                 if removed:
                     found = True
+
+                    # After removing a seating, recompute is_bonus for the whole row
+                    self._recompute_row_turns(row)
                     break
             
             if not found:
@@ -760,6 +777,7 @@ class DayViewSet(viewsets.ViewSet):
                 tech_stats.append({
                     'tech_alias': row.tech_alias,
                     'tech_name': row.tech_name,
+                    'row_number': getattr(row, 'row_number', None),
                     'total_value_without_penalty': total_without_penalty,
                     'total_value_with_penalty': total_with_penalty,
                     'penalty_count': penalty_count,

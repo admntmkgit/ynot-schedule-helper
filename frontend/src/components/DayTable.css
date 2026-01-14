@@ -36,6 +36,7 @@
     border-collapse: collapse;
     background: var(--color-secondary);
     font-size: 0.9rem;
+    table-layout: fixed;
 }
 
 .day-table thead {
@@ -62,13 +63,13 @@
 
 /* Column widths */
 .col-row-number {
-    width: 50px;
-    min-width: 50px;
+    width: 44px;
+    min-width: 44px;
 }
 
 .col-tech-alias {
-    width: 80px;
-    min-width: 80px;
+    width: 72px;
+    min-width: 72px;
 }
 
 .col-tech-name {
@@ -84,8 +85,20 @@
 }
 
 .col-seating {
-    width: 70px;
-    min-width: 70px;
+    width: 40px;
+    min-width: 36px;
+}
+
+/* Reduce default TD padding specifically for seating columns to make cells denser */
+.day-table th.col-seating,
+.day-table td.col-seating {
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.day-table td.col-seating {
+    padding: 0.06rem 0.08rem;
 }
 
 .col-turns {
@@ -147,10 +160,10 @@
 
 /* Seating Cells */
 .seating-cell {
-    padding: 0.25rem;
+    padding: 0.12rem 0.12rem;
     vertical-align: middle;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.12s;
 }
 
 .seating-cell:not(.empty):hover {
@@ -166,6 +179,13 @@
     flex-direction: column;
     gap: 0.1rem;
     font-size: 0.75rem;
+}
+
+.seating-content.compact {
+    flex-direction: row;
+    gap: 0.12rem;
+    align-items: center;
+    justify-content: center;
 }
 
 .seating-service {
@@ -206,23 +226,33 @@
     color: rgba(0, 200, 0, 0.95);
 }
 
-.seating-penalty {
-    color: rgba(255, 0, 0, 0.8);
-    font-size: 1rem;
-}
-
 .seating-requested-badge {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
-    border-radius: 9px;
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    border-radius: 8px;
     background: #2b7be9; /* blue */
     color: white;
     text-align: center;
     font-weight: 700;
-    margin-right: 6px;
-    font-size: 12px;
+    margin-right: 2px;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.seating-penalty {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    border-radius: 8px;
+    background: rgba(255, 0, 0, 0.95);
+    color: white;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Seating status colors */
@@ -251,28 +281,17 @@
     border-right: 3px solid rgba(255, 215, 0, 0.7);
 }
 
-.seating-badges {
+.seating-compact-row {
     display: flex;
+    gap: 2px;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-}
-
-.seating-short {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    justify-content: center;
-}
-
-.seating-short.inline {
-    flex-direction: row;
 }
 
 .seating-shortname {
     font-weight: 700;
     color: var(--color-accent);
-    margin-right: 6px;
+    margin-right: 2px;
 }
 
 .inline-elapsed, .inline-value {
@@ -374,8 +393,8 @@
     }
     
     .col-seating {
-        width: 56px;
-        min-width: 56px;
+        width: 40px;
+        min-width: 36px;
     }
     
     .seating-content {

@@ -34,12 +34,13 @@ class DayMetadata(models.Model):
 class Seating:
     """Seating data structure (not a Django model, used for JSON persistence)"""
     def __init__(self, id=None, is_requested=False, is_bonus=False, service='', 
-                 time=None, value=0, has_value_penalty=False, short_name=''):
+                 time=None, value=0, has_value_penalty=False, short_name='', time_needed=None):
         self.id = id or str(uuid.uuid4())
         self.is_requested = is_requested
         self.is_bonus = is_bonus
         self.service = service
         self.short_name = short_name
+        self.time_needed = time_needed
         # Use timezone-aware ISO format so clients parse times correctly across zones
         try:
             default_time = datetime.now().astimezone().isoformat()
@@ -57,6 +58,7 @@ class Seating:
             'service': self.service,
             'short_name': self.short_name,
             'time': self.time,
+            'time_needed': self.time_needed,
             'value': self.value,
             'has_value_penalty': self.has_value_penalty,
         }
@@ -70,6 +72,7 @@ class Seating:
             service=data.get('service', ''),
             short_name=data.get('short_name', ''),
             time=data.get('time'),
+            time_needed=data.get('time_needed'),
             value=data.get('value', 0),
             has_value_penalty=data.get('has_value_penalty', False),
         )

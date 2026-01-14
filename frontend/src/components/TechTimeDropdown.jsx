@@ -9,7 +9,6 @@ import './TechTimeDropdown.css';
 
 function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTechAlias = null, initialTechName = '' }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [action, setAction] = useState('');
     const [techs, setTechs] = useState([]);
     const [selectedTech, setSelectedTech] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -90,11 +89,13 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
 
     const getTechRow = (techAlias) => {
         if (!dayData || !dayData.day_rows) return null;
+        // Return the row regardless of is_active so UI can show disabled state
         return dayData.day_rows.find(row => row.tech_alias === techAlias);
     };
 
     const isTechClockedIn = (techAlias) => {
-        return !!getTechRow(techAlias);
+        const row = getTechRow(techAlias);
+        return !!row && !!row.is_active;
     };
 
     const getTechStatus = (tech) => {
@@ -104,9 +105,32 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
         return 'Clocked In';
     };
 
-    const handleTechSelect = (tech) => {
+    const handleTechSelect = async (tech) => {
         setSelectedTech(tech);
         setError('');
+        
+        // Auto clock-in if not clocked in
+        if (!isTechClockedIn(tech.alias) && currentDate) {
+            setLoading(true);
+            try {
+                const response = await dayService.clockIn(currentDate, tech.alias, tech.name);
+                // Success - notify parent and reload
+                if (onSuccess) {
+                    onSuccess(response);
+                }
+                // Trigger global reload of active day if available
+                try {
+                    if (typeof window !== 'undefined' && window.__reloadActiveDay) window.__reloadActiveDay();
+                } catch (e) {}
+                // Reload day data to show updated status
+                await loadDayData(currentDate);
+            } catch (err) {
+                const errorMessage = err.data?.error || err.message || 'Clock-in failed';
+                setError(errorMessage);
+            } finally {
+                setLoading(false);
+            }
+        }
     };
 
     // If an initial row/alias was provided, preselect
@@ -119,9 +143,8 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
         }
     }, [initialTechRow, initialTechAlias, initialTechName]);
 
-    const handleAction = async (overrideAction = null) => {
-        const useAction = overrideAction || action;
-        if (!useAction || !selectedTech) {
+    const handleAction = async (actionType) => {
+        if (!actionType || !selectedTech) {
             setError('Please select a tech and an action');
             return;
         }
@@ -136,10 +159,7 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
 
         try {
             let response;
-            switch (useAction) {
-                case 'clock-in':
-                    response = await dayService.clockIn(currentDate, selectedTech.alias, selectedTech.name);
-                    break;
+            switch (actionType) {
                 case 'clock-out':
                     response = await dayService.clockOut(currentDate, selectedTech.alias);
                     break;
@@ -159,7 +179,7 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
                     return;
             }
 
-            // Success - notify parent and close
+            // Success - notify parent
             if (onSuccess) {
                 onSuccess(response);
             }
@@ -167,11 +187,12 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
             try {
                 if (typeof window !== 'undefined' && window.__reloadActiveDay) window.__reloadActiveDay();
             } catch (e) {}
+            
+            // Auto-dismiss modal after action
             onClose();
         } catch (err) {
             const errorMessage = err.data?.error || err.message || 'Operation failed';
             setError(errorMessage);
-        } finally {
             setLoading(false);
         }
     };
@@ -223,29 +244,37 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
                         <div className="context-actions">
                             {(() => {
                                 const row = getTechRow(selectedTech.alias);
-                                const clockedIn = !!row;
+                                const clockedIn = !!row && !!row.is_active;
                                 const onBreak = row?.is_on_break;
 
                                 return (
                                     <>
-                                        {!clockedIn ? (
-                                            <button className="btn-primary" onClick={async () => { setAction('clock-in'); await handleAction(); }} disabled={loading || !currentDate}>
-                                                {loading ? 'Processing...' : 'Clock In'}
-                                            </button>
-                                        ) : (
-                                            <button className="btn-warning" onClick={async () => { setAction('clock-out'); await handleAction(); }} disabled={loading || !currentDate}>
+                                        {clockedIn && (
+                                            <button 
+                                                className="btn-warning" 
+                                                onClick={() => handleAction('clock-out')} 
+                                                disabled={loading || !currentDate}
+                                            >
                                                 {loading ? 'Processing...' : 'Clock Out'}
                                             </button>
                                         )}
 
                                         {clockedIn && !onBreak && (
-                                            <button className="btn-secondary" onClick={async () => { setAction('break-start'); await handleAction(); }} disabled={loading || !currentDate}>
+                                            <button 
+                                                className="btn-secondary" 
+                                                onClick={() => handleAction('break-start')} 
+                                                disabled={loading || !currentDate}
+                                            >
                                                 {loading ? 'Processing...' : 'Break Start'}
                                             </button>
                                         )}
 
                                         {clockedIn && onBreak && (
-                                            <button className="btn-secondary" onClick={async () => { setAction('break-stop'); await handleAction(); }} disabled={loading || !currentDate}>
+                                            <button 
+                                                className="btn-secondary" 
+                                                onClick={() => handleAction('break-stop')} 
+                                                disabled={loading || !currentDate}
+                                            >
                                                 {loading ? 'Processing...' : 'Break Stop'}
                                             </button>
                                         )}
@@ -259,15 +288,8 @@ function TechTimeDropdown({ onClose, onSuccess, initialTechRow = null, initialTe
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="tech-time-actions">
-                    <button 
-                        className="btn-primary"
-                        onClick={handleAction}
-                        disabled={!action || !selectedTech || loading || !currentDate}
-                    >
-                        {loading ? 'Processing...' : 'Submit'}
-                    </button>
                     <button className="btn-secondary" onClick={onClose} disabled={loading}>
-                        Cancel
+                        Close
                     </button>
                 </div>
             </div>

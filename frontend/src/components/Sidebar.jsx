@@ -95,7 +95,32 @@ function Sidebar({ dayData, onUpdate, onAddSeating }) {
                 </div>
             )}
 
-            {/* Recommendation Widgets - Always visible when day is open */}
+            {/* New Day Checklist - First */}
+            {showNewDayChecklist && (
+                <div className="checklist-section">
+                    <h3>New Day Checklist</h3>
+                    {checklists.new_day_checklist.length === 0 ? (
+                        <div className="checklist-empty">
+                            No checklist items configured
+                        </div>
+                    ) : (
+                        <div className="checklist-items">
+                            {checklists.new_day_checklist.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className={`checklist-item ${item.completed ? 'completed' : ''}`}
+                                    onClick={() => toggleChecklistItem('new_day', index)}
+                                >
+                                    <div className="checklist-checkbox"></div>
+                                    <div className="checklist-text">{item.text}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Recommendation Widgets - Second, always visible when day is open */}
             {showRecommendations && (
                 <div className="recommendations-section">
                     <h3>Recommendations</h3>
@@ -135,32 +160,7 @@ function Sidebar({ dayData, onUpdate, onAddSeating }) {
                 </div>
             )}
 
-            {/* New Day Checklist */}
-            {showNewDayChecklist && (
-                <div className="checklist-section">
-                    <h3>New Day Checklist</h3>
-                    {checklists.new_day_checklist.length === 0 ? (
-                        <div className="checklist-empty">
-                            No checklist items configured
-                        </div>
-                    ) : (
-                        <div className="checklist-items">
-                            {checklists.new_day_checklist.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className={`checklist-item ${item.completed ? 'completed' : ''}`}
-                                    onClick={() => toggleChecklistItem('new_day', index)}
-                                >
-                                    <div className="checklist-checkbox"></div>
-                                    <div className="checklist-text">{item.text}</div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* End Day Checklist */}
+            {/* End Day Checklist - Third */}
             {showEndDayChecklist && (
                 <div className="checklist-section">
                     <h3>End Day Checklist</h3>

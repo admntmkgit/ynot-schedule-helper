@@ -16,7 +16,7 @@ function ServiceProfile({ name, service: serviceProp, onClose, onSaved }) {
         // If service prop provided (create mode) use it, else load by name
         if (serviceProp) {
             const s = serviceProp;
-            setService({ name: s.name || '', time_needed: s.time_needed || 30, is_bonus: !!s.is_bonus, short_name: s.short_name || '', qualified_techs: s.qualified_techs || [] });
+            setService({ name: s.name || '', time_needed: s.time_needed || 30, is_bonus: !!s.is_bonus, is_default: !!s.is_default, short_name: s.short_name || '', qualified_techs: s.qualified_techs || [] });
             setTechs([]);
             setNewName(s.name || '');
             setLoading(false);
@@ -45,7 +45,7 @@ function ServiceProfile({ name, service: serviceProp, onClose, onSaved }) {
                 fetch('/api/techs/').then(r => r.json())
             ]);
             const s = serviceResp;
-            setService({ name: s.name, time_needed: s.time_needed, is_bonus: s.is_bonus, short_name: s.short_name || '', qualified_techs: s.qualified_techs || [] });
+            setService({ name: s.name, time_needed: s.time_needed, is_bonus: s.is_bonus, is_default: s.is_default || false, short_name: s.short_name || '', qualified_techs: s.qualified_techs || [] });
             setTechs(techsResp || []);
             setNewName(s.name);
         } catch (err) {
@@ -61,24 +61,57 @@ function ServiceProfile({ name, service: serviceProp, onClose, onSaved }) {
         setService({ ...service, qualified_techs: updated });
     };
 
+    const handleIsDefaultChange = (checked) => {
+        let newQualifiedTechs = service.qualified_techs || [];
+        if (checked) {
+            // When checking is_default, add all techs to qualified_techs
+            const allTechAliases = techs.map(t => t.alias);
+            newQualifiedTechs = [...new Set([...newQualifiedTechs, ...allTechAliases])];
+        } else {
+            // When unchecking is_default, clear all techs (user can manually add them back)
+            newQualifiedTechs = [];
+        }
+        setService({ ...service, is_default: checked, qualified_techs: newQualifiedTechs });
+    };
+
     const handleSave = async () => {
         setSaving(true);
         setError('');
         try {
             if (name) {
                 // existing service: update
-                await serviceService.partialUpdate(name, { time_needed: service.time_needed, is_bonus: service.is_bonus, short_name: service.short_name || '' });
+                await serviceService.partialUpdate(name, { time_needed: service.time_needed, is_bonus: service.is_bonus, is_default: service.is_default, short_name: service.short_name || '' });
                 await serviceService.updateQualifiedTechs(name, service.qualified_techs || []);
             } else {
                 // create new service
                 if (!service.name || !service.name.trim()) throw new Error('Service name is required');
-                await serviceService.create({ name: service.name.trim(), time_needed: service.time_needed, is_bonus: service.is_bonus, short_name: service.short_name || '' });
+                await serviceService.create({ name: service.name.trim(), time_needed: service.time_needed, is_bonus: service.is_bonus, is_default: service.is_default, short_name: service.short_name || '' });
                 await serviceService.updateQualifiedTechs(service.name.trim(), service.qualified_techs || []);
             }
             if (onSaved) onSaved();
             onClose();
         } catch (err) {
-            setError('Failed to save: ' + (err.message || err));
+            // Extract detailed error from API response
+            let errorMsg = 'Failed to save';
+            if (err.data && typeof err.data === 'object') {
+                // DRF validation errors are structured as {field: [error messages]}
+                const errors = [];
+                for (const [field, messages] of Object.entries(err.data)) {
+                    if (Array.isArray(messages)) {
+                        errors.push(...messages);
+                    } else if (typeof messages === 'string') {
+                        errors.push(messages);
+                    }
+                }
+                if (errors.length > 0) {
+                    errorMsg = errors.join('; ');
+                } else {
+                    errorMsg = err.data.error || err.data.detail || errorMsg;
+                }
+            } else if (err.message) {
+                errorMsg = err.message;
+            }
+            setError(errorMsg);
         } finally {
             setSaving(false);
         }
@@ -161,6 +194,14 @@ function ServiceProfile({ name, service: serviceProp, onClose, onSaved }) {
                                 <label>
                                     <input type="checkbox" checked={service.is_bonus} onChange={e => setService({ ...service, is_bonus: e.target.checked })} /> Is Bonus Service
                                 </label>
+                            </div>
+                            <div className="field">
+                                <label>
+                                    <input type="checkbox" checked={service.is_default || false} onChange={e => handleIsDefaultChange(e.target.checked)} /> Default Service (auto-assign to all techs)
+                                </label>
+                                {service.is_default && (
+                                    <div style={{marginTop: '0.5rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.6)'}}>This service will be automatically assigned to all technicians. Manual overrides are allowed.</div>
+                                )}
                             </div>
                             <div className="field">
                                 <label>Qualified Technicians</label>

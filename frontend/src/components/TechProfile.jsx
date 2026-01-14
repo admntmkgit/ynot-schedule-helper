@@ -18,9 +18,9 @@ function TechProfile({ alias, tech: techProp, onClose, onSaved }) {
             const aliasVal = techProp.tech_alias || techProp.alias || '';
             const nameVal = techProp.tech_name || techProp.name || '';
             const skillsVal = techProp.skills || [];
-            setTech({ alias: aliasVal, name: nameVal, skills: skillsVal });
+            const isCreatingNewTech = !aliasVal;
             setNewAlias(aliasVal);
-            loadServices();
+            loadServicesForCreate(isCreatingNewTech, aliasVal, nameVal, skillsVal); // Pass tech data to set after services load
             return;
         }
 
@@ -32,6 +32,28 @@ function TechProfile({ alias, tech: techProp, onClose, onSaved }) {
         try {
             const servicesResp = await fetch('/api/services/').then(r => r.json());
             setServices(servicesResp || []);
+            setLoading(false);
+        } catch (err) {
+            setError('Failed to load services');
+            setLoading(false);
+        }
+    };
+
+    const loadServicesForCreate = async (isCreatingNewTech, aliasVal, nameVal, skillsVal) => {
+        try {
+            const servicesResp = await fetch('/api/services/').then(r => r.json());
+            setServices(servicesResp || []);
+            
+            // If creating new tech, pre-populate skills with is_default services
+            let finalSkills = skillsVal;
+            if (isCreatingNewTech) {
+                const defaultServices = (servicesResp || [])
+                    .filter(s => s.is_default)
+                    .map(s => s.name);
+                finalSkills = defaultServices;
+            }
+            
+            setTech({ alias: aliasVal, name: nameVal, skills: finalSkills });
             setLoading(false);
         } catch (err) {
             setError('Failed to load services');
@@ -87,7 +109,27 @@ function TechProfile({ alias, tech: techProp, onClose, onSaved }) {
             if (onSaved) onSaved();
             onClose();
         } catch (err) {
-            setError('Failed to save: ' + (err.message || err));
+            // Extract detailed error from API response
+            let errorMsg = 'Failed to save';
+            if (err.data && typeof err.data === 'object') {
+                // DRF validation errors are structured as {field: [error messages]}
+                const errors = [];
+                for (const [field, messages] of Object.entries(err.data)) {
+                    if (Array.isArray(messages)) {
+                        errors.push(...messages);
+                    } else if (typeof messages === 'string') {
+                        errors.push(messages);
+                    }
+                }
+                if (errors.length > 0) {
+                    errorMsg = errors.join('; ');
+                } else {
+                    errorMsg = err.data.error || err.data.detail || errorMsg;
+                }
+            } else if (err.message) {
+                errorMsg = err.message;
+            }
+            setError(errorMsg);
         } finally {
             setSaving(false);
         }

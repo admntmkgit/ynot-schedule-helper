@@ -86,33 +86,7 @@ function HomePage() {
                 </div>
             ) : (
                 <div className="active-day">
-                    <div className="day-header">
-                        <div className="day-info">
-                            <h2>Day: {activeDay.date}</h2>
-                            <span className={`status-badge status-${activeDay.status}`}>
-                                {activeDay.status.toUpperCase()}
-                            </span>
-                        </div>
-                        <div className="day-header-actions">
-                            {isDayOpen && (
-                                <button
-                                    className="btn-accent"
-                                    onClick={handleEndDay}
-                                    disabled={endingDay}
-                                >
-                                    {endingDay ? 'Ending Day...' : 'End Day'}
-                                </button>
-                            )}
-                            {isDayEnded && (
-                                <button
-                                    className="btn-accent"
-                                    onClick={handleOpenCloseDaySummary}
-                                >
-                                    Close Day
-                                </button>
-                            )}
-                        </div>
-                    </div>
+                        {/* Day header moved to NavBar */}
 
                     <div className="day-content-with-sidebar">
                         <div className="day-content-main">

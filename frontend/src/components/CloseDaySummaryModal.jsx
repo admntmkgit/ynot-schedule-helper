@@ -11,6 +11,7 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [closing, setClosing] = useState(false);
+    const [sortByRowId, setSortByRowId] = useState(false);
 
     useEffect(() => {
         if (isOpen && dayData) {
@@ -26,7 +27,9 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
 
         try {
             const data = await api.get(`/days/${dayData.date}/summary/`);
+            // Store original data with row_id for sorting
             if (data && data.tech_stats && Array.isArray(data.tech_stats)) {
+                // Default sort by alias/name
                 data.tech_stats.sort((a, b) => {
                     const aName = (a.tech_name && a.tech_name.trim()) ? a.tech_name.trim().toLowerCase() : (a.tech_alias || '').toLowerCase();
                     const bName = (b.tech_name && b.tech_name.trim()) ? b.tech_name.trim().toLowerCase() : (b.tech_alias || '').toLowerCase();
@@ -40,6 +43,36 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getSortedStats = () => {
+        if (!summary || !summary.tech_stats) return [];
+        
+        const stats = [...summary.tech_stats];
+        
+        if (sortByRowId) {
+            // Sort by row_number from DayTable
+            stats.sort((a, b) => (a.row_number || 0) - (b.row_number || 0));
+        } else {
+            // Sort by alias/name
+            stats.sort((a, b) => {
+                const aName = (a.tech_name && a.tech_name.trim()) ? a.tech_name.trim().toLowerCase() : (a.tech_alias || '').toLowerCase();
+                const bName = (b.tech_name && b.tech_name.trim()) ? b.tech_name.trim().toLowerCase() : (b.tech_alias || '').toLowerCase();
+                return aName.localeCompare(bName);
+            });
+        }
+        
+        return stats;
+    };
+
+    const calculateTotals = () => {
+        if (!summary || !summary.tech_stats) return { totalValue: 0, totalAfterAdj: 0, totalAdj: 0 };
+        
+        const totalValue = summary.tech_stats.reduce((sum, tech) => sum + (tech.total_value_without_penalty || 0), 0);
+        const totalAfterAdj = summary.tech_stats.reduce((sum, tech) => sum + (tech.total_value_with_penalty || 0), 0);
+        const totalAdj = totalValue - totalAfterAdj;
+        
+        return { totalValue, totalAfterAdj, totalAdj };
     };
 
     const handleCloseDay = async () => {
@@ -81,6 +114,9 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
     }
 
     const canCloseDay = summary && summary.all_seatings_closed && summary.end_day_checklist_complete;
+    const isDayClosed = dayData && dayData.status === 'closed';
+    const sortedStats = getSortedStats();
+    const totals = calculateTotals();
 
     return (
         <div className="modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -125,7 +161,13 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
                                 <table className="tech-stats-table">
                                     <thead>
                                         <tr>
-                                            <th>Technician</th>
+                                            <th 
+                                                onClick={() => setSortByRowId(!sortByRowId)}
+                                                style={{ cursor: 'pointer', userSelect: 'none' }}
+                                                title="Click to toggle sort"
+                                            >
+                                                Technician {sortByRowId ? '(by Row #)' : '(by Name)'}
+                                            </th>
                                             <th>Turns</th>
                                             <th>Value</th>
                                             <th>After Adjustment</th>
@@ -133,7 +175,7 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {summary.tech_stats.map((tech, index) => (
+                                        {sortedStats.map((tech, index) => (
                                             <tr key={index}>
                                                 <td>
                                                     <div className="tech-alias">{tech.tech_alias}</div>
@@ -172,11 +214,26 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
                                             </tr>
                                         ))}
                                     </tbody>
+                                    <tfoot>
+                                        <tr className="totals-row">
+                                            <td><strong>Totals</strong></td>
+                                            <td></td>
+                                            <td className="value-without-adjustment"><strong>${totals.totalValue}</strong></td>
+                                            <td className="value-after-adjustment"><strong>${totals.totalAfterAdj}</strong></td>
+                                            <td>
+                                                {totals.totalAdj > 0 ? (
+                                                    <span className="adjustment-indicator"><strong>-${totals.totalAdj}</strong></span>
+                                                ) : (
+                                                    <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>—</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
 
                             {/* Confirmation Section */}
-                            {canCloseDay && (
+                            {!isDayClosed && canCloseDay && (
                                 <div className="confirmation-section">
                                     <p className="confirmation-text">
                                         You are about to close this day. Once closed:
@@ -191,6 +248,14 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
                                     </p>
                                 </div>
                             )}
+
+                            {isDayClosed && (
+                                <div className="info-section">
+                                    <p className="info-text">
+                                        This day has been closed. Summary is view-only.
+                                    </p>
+                                </div>
+                            )}
                         </>
                     ) : null}
                 </div>
@@ -201,15 +266,17 @@ function CloseDaySummaryModal({ isOpen, onClose, dayData, onDayClosed }) {
                         onClick={onClose}
                         disabled={closing}
                     >
-                        Cancel
+                        {isDayClosed ? 'Close' : 'Cancel'}
                     </button>
-                    <button
-                        className="btn-primary"
-                        onClick={handleCloseDay}
-                        disabled={!canCloseDay || closing}
-                    >
-                        {closing ? 'Closing Day...' : 'Close Day'}
-                    </button>
+                    {!isDayClosed && (
+                        <button
+                            className="btn-primary"
+                            onClick={handleCloseDay}
+                            disabled={!canCloseDay || closing}
+                        >
+                            {closing ? 'Closing Day...' : 'Close Day'}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

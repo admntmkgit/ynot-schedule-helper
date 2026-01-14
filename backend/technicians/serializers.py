@@ -14,15 +14,28 @@ class TechnicianSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
 
+    def validate_alias(self, value):
+        """Validate that alias is unique on create"""
+        # Only check uniqueness on create (not update)
+        if not self.instance and Technician.objects.filter(alias=value).exists():
+            raise serializers.ValidationError(f"Technician with alias '{value}' already exists")
+        return value
+
     def create(self, validated_data):
         """Create a new technician"""
+        from services.models import Service
         skills_data = self.initial_data.get('skills', [])
         alias = validated_data['alias']
         name = validated_data.get('name', '')
         
         technician = Technician.objects.create(alias=alias, name=name)
-        if skills_data:
-            technician.set_skills(skills_data)
+        
+        # Auto-assign default services
+        default_services = Service.objects.filter(is_default=True).values_list('name', flat=True)
+        all_skills = list(set(list(skills_data) + list(default_services)))
+        
+        if all_skills:
+            technician.set_skills(all_skills)
         return technician
 
     def update(self, instance, validated_data):

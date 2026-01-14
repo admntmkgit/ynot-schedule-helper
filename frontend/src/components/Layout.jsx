@@ -4,6 +4,7 @@
  */
 import { Outlet } from 'react-router-dom';
 import NavBar from './NavBar';
+import QuickActionBar from './QuickActionBar';
 import { ActiveDayProvider } from '../context/ActiveDayContext';
 
 function Layout() {
@@ -11,6 +12,7 @@ function Layout() {
         <ActiveDayProvider>
             <div className="app-layout">
                 <NavBar />
+                <QuickActionBar />
                 <main className="app-main">
                     <Outlet />
                 </main>

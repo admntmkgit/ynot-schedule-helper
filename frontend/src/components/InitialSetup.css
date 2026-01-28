@@ -1,0 +1,104 @@
+/**
+ * Phase 10: Initial Setup Screen Styles
+ */
+.initial-setup {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    padding: 2rem;
+}
+
+.setup-container {
+    max-width: 450px;
+    width: 100%;
+    background: rgba(var(--color-secondary-rgb), 0.5);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.setup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.setup-header h1 {
+    font-size: 1.5rem;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+}
+
+.setup-header h2 {
+    font-size: 1.25rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.setup-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.setup-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.setup-form .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.setup-form .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 8px;
+    background: var(--color-primary);
+    color: white;
+    transition: border-color 0.2s;
+}
+
+.setup-form .form-group input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.setup-form .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.setup-form .hint {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.setup-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.setup-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    color: #ff6b6b;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}

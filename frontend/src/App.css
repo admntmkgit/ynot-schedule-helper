@@ -1,0 +1,175 @@
+:root {
+  /* Color theme variables are defined in index.css */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--color-primary);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-primary);
+  margin: 0;
+  padding: 0;
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout.loading-screen {
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-message {
+  color: var(--color-accent);
+  font-size: 1.2rem;
+}
+
+.app-main {
+  flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+/* Remove old header and footer styles - they are now in NavBar component */
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.welcome-card {
+  background-color: var(--color-secondary);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, var(--opacity-faint));
+}
+
+.welcome-card h2 {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.status {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.error {
+  color: #ff6b6b;
+  padding: 1rem;
+  background-color: rgba(255, 107, 107, 0.1);
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.success {
+  color: #51cf66;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.api-status {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--color-accent);
+  border-radius: 4px;
+}
+
+.api-info {
+  margin-top: 0.5rem;
+}
+
+.api-info p {
+  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, var(--opacity-medium));
+}
+
+.next-steps {
+  background-color: var(--color-secondary);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, var(--opacity-faint));
+}
+
+.next-steps h3 {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.next-steps ul {
+  list-style-position: inside;
+  color: var(--text-secondary);
+}
+
+.next-steps li {
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+}
+
+/* Phase 2 & 3: Home Page Styles */
+.home-page {
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
+.phase-status,
+.next-phase,
+.quick-start {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, var(--opacity-faint));
+  border-radius: 8px;
+  border-left: 4px solid var(--color-accent);
+}
+
+.phase-status h3,
+.next-phase h3,
+.quick-start h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.phase-status ul,
+.quick-start ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.phase-status li,
+.quick-start li {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.next-phase p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}

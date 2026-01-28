@@ -1,0 +1,141 @@
+/**
+ * Phase 10: User Switcher Styles
+ */
+
+/* User Switcher in Navbar */
+.user-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(var(--color-secondary-rgb), 0.5);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.user-switcher:hover {
+    background: rgba(var(--color-accent-rgb), 0.2);
+    border-color: var(--color-accent);
+}
+
+.user-icon {
+    font-size: 1.1rem;
+}
+
+.user-name {
+    color: white;
+    font-weight: 500;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.switch-icon {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+}
+
+/* Switch Modal */
+.user-switch-modal .modal-content {
+    max-width: 320px;
+    width: 90%;
+}
+
+.current-user-info {
+    text-align: center;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.current-user-info strong {
+    color: var(--color-accent);
+}
+
+/* PIN Display */
+.pin-display {
+    margin-bottom: 1rem;
+}
+
+.pin-input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.5rem;
+    border: 2px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 8px;
+    background: var(--color-primary);
+    color: white;
+}
+
+.pin-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.pin-input::placeholder {
+    letter-spacing: normal;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* PIN Pad */
+.pin-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.pin-pad-btn {
+    padding: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 8px;
+    background: rgba(var(--color-secondary-rgb), 0.5);
+    color: white;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.pin-pad-btn:hover {
+    background: rgba(var(--color-accent-rgb), 0.3);
+    border-color: var(--color-accent);
+}
+
+.pin-pad-btn:active {
+    transform: scale(0.95);
+    background: var(--color-accent);
+    color: var(--color-primary);
+}
+
+.pin-pad-clear {
+    color: #ff6b6b;
+}
+
+.pin-pad-back {
+    color: var(--color-accent);
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-actions .btn-primary {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+.modal-actions .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

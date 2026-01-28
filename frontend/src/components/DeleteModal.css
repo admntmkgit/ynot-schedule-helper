@@ -1,0 +1,228 @@
+/* Phase 3: Delete Modal Styles */
+.delete-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.delete-modal {
+    background-color: var(--color-secondary);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    border: 2px solid var(--color-accent);
+}
+
+.delete-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, var(--opacity-faint));
+    background-color: rgba(212, 175, 55, var(--opacity-faint));
+}
+
+.delete-header h2 {
+    margin: 0;
+    color: var(--color-accent);
+    font-size: 1.5rem;
+}
+
+.delete-warning {
+    padding: 1.5rem;
+    background-color: rgba(212, 175, 55, var(--opacity-subtle));
+    border-left: 4px solid var(--color-accent);
+    margin: 1.5rem;
+    border-radius: 4px;
+}
+
+.delete-warning p {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.delete-warning strong {
+    color: var(--color-accent);
+}
+
+.delete-form {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.delete-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+
+/* Ensure items are left-aligned and span full width */
+.closed-days-list {
+    align-items: flex-start;
+}
+
+.closed-day-item {
+    justify-content: flex-start;
+    width: 100%;
+}
+.closed-day-item {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start ;
+    justify-content: flex-start;
+}
+.closed-day-label {
+    margin-left: 0.25rem;
+}
+
+.closed-day-label {
+    display: inline-block;
+    text-align: left;
+}
+
+.delete-form label span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.delete-form input[type="date"],
+.delete-form input[type="text"],
+.delete-form select {
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, var(--opacity-subtle));
+    border-radius: 4px;
+    background-color: var(--color-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.delete-form input:focus,
+.delete-form select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.day-summary {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, var(--opacity-faint));
+    border-radius: 4px;
+}
+
+.day-summary h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--color-accent);
+}
+
+.day-summary p {
+    margin: 0.25rem 0;
+    color: var(--text-primary);
+}
+
+.final-warning {
+    padding: 1.5rem;
+    background-color: rgba(255, 0, 0, 0.2);
+    border: 2px solid rgba(255, 0, 0, 0.5);
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.final-warning h3 {
+    margin: 0 0 1rem 0;
+    color: #FF6B6B;
+}
+
+.final-warning p {
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.delete-target {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--color-accent) !important;
+    margin: 1rem 0 !important;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.info-message {
+    padding: 0.75rem;
+    margin: 1rem 0;
+    background-color: rgba(33, 150, 243, 0.2);
+    border: 1px solid rgba(33, 150, 243, 0.4);
+    border-radius: 4px;
+    color: #64B5F6;
+    font-size: 0.9rem;
+}
+
+.error-message {
+    padding: 0.75rem;
+    margin: 1rem 0;
+    background-color: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    border-radius: 4px;
+    color: #FF6B6B;
+    font-size: 0.9rem;
+}
+
+.delete-confirm-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, var(--opacity-faint));
+    border-radius: 4px;
+}
+
+.delete-confirm-section p {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-primary);
+}
+
+.delete-confirm-section strong {
+    color: var(--color-accent);
+}
+
+.btn-danger {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--color-accent);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.25s;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background-color: rgba(212, 175, 55, var(--opacity-high));
+    transform: scale(1.02);
+}
+
+.btn-danger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.coming-soon-note {
+    padding: 1rem 1.5rem 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    font-style: italic;
+}

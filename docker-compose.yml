@@ -1,0 +1,38 @@
+services:
+  backend:
+    build: ./backend
+    container_name: schedule_helper_backend
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DJANGO_SETTINGS_MODULE=backend.settings
+    ports:
+      - "${BACKEND_HOST_PORT:-8011}:8000"
+    networks:
+      - schedule_helper_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build: ./frontend
+    container_name: schedule_helper_frontend
+    ports:
+      - "${FRONTEND_HOST_PORT:-8010}:80"
+    depends_on:
+      - backend
+    networks:
+      - schedule_helper_network
+
+networks:
+  schedule_helper_network:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local

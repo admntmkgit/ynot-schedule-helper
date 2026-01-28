@@ -1,0 +1,375 @@
+/* Home Page Styles */
+.home-page {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* override any global max-width to allow full-bleed layout */
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Day Selection View */
+.day-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding: 3rem 0;
+}
+
+.welcome-card {
+    background: var(--color-primary);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+}
+
+.welcome-card h2 {
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+}
+
+.welcome-card p {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.day-buttons {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.day-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 3rem;
+    font-size: 1.1rem;
+    min-width: 200px;
+    transition: transform 0.2s;
+}
+
+.day-button:hover {
+    transform: translateY(-2px);
+}
+
+.day-button .icon {
+    font-size: 3rem;
+}
+
+/* Active Day View */
+.active-day {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.day-header {
+    background: var(--color-primary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.day-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.day-info h2 {
+    margin: 0;
+    color: var(--color-accent);
+}
+
+.day-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-open {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+}
+
+.status-ended {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+}
+
+.status-closed {
+    background: rgba(158, 158, 158, 0.2);
+    color: #9e9e9e;
+}
+
+/* Day Content with Sidebar Layout */
+.day-content-with-sidebar {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.day-content-main {
+    flex: 1;
+    background: var(--color-primary);
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.day-closed-banner {
+    background: rgba(158, 158, 158, 0.2);
+    color: #9e9e9e;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.day-content {
+    background: var(--color-primary);
+    padding: 2rem;
+    border-radius: 8px;
+    min-height: 400px;
+}
+
+.placeholder-message {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 3rem;
+}
+
+.placeholder-message p {
+    margin: 0.5rem 0;
+}
+
+.placeholder-message .meta {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--color-primary);
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--color-accent);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.date-input {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: white;
+    font-size: 1rem;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.error-message {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+/* Open Day Dialog */
+.no-days-message {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+}
+
+.days-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.day-list-item {
+    background: var(--color-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+    font-size: 1rem;
+}
+
+.day-list-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--color-accent);
+}
+
+.day-list-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.day-list-item .date {
+    font-weight: 500;
+}
+
+.day-list-item .arrow {
+    color: var(--color-accent);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .day-content-with-sidebar {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-page {
+        padding: 1rem;
+    }
+
+    .day-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .day-button {
+        width: 100%;
+    }
+
+    .day-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .day-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}

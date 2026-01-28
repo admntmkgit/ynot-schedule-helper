@@ -1,0 +1,148 @@
+/**
+ * Phase 10: Users Tab Styles
+ */
+.users-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(var(--color-accent-rgb), 0.3);
+}
+
+.users-header h3 {
+    margin: 0;
+    color: var(--color-accent);
+}
+
+/* User Form */
+.user-form {
+    background: rgba(var(--color-secondary-rgb), 0.5);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.user-form h4 {
+    margin: 0 0 1rem 0;
+    color: var(--color-accent);
+}
+
+.user-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.user-form .form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.user-form .form-group label .hint {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.user-form .form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 4px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 1rem;
+}
+
+.user-form .form-group input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.user-form .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+/* Users List */
+.users-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.no-users {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(var(--color-secondary-rgb), 0.5);
+}
+
+.users-table th {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.users-table td {
+    color: white;
+}
+
+.users-table td.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Button Styles */
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-small:hover {
+    opacity: 0.8;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger-confirm {
+    background: #ff0000;
+    color: white;
+    animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+    from { opacity: 0.7; }
+    to { opacity: 1; }
+}
+
+.loading {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+}

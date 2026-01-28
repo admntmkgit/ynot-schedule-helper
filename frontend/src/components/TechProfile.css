@@ -1,0 +1,81 @@
+.tech-profile .profile-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tech-profile .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tech-profile label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.tech-profile .readonly {
+    padding: 0.6rem;
+    background: var(--color-primary);
+    border-radius: 4px;
+    color: var(--text-primary);
+}
+
+.tech-profile input[type="text"] {
+    padding: 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,var(--opacity-faint));
+    background: var(--color-primary);
+    color: var(--text-primary);
+}
+
+.tech-profile .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.5rem;
+}
+
+.skill-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255,255,255,var(--opacity-faint));
+    border-radius: 4px;
+}
+
+.modal-content.tech-profile {
+    width: 520px;
+    max-width: 95%;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,var(--opacity-faint));
+}
+
+.btn-warning {
+    background: #f0ad4e;
+    color: #000;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+}
+
+.btn-danger {
+    background: #d9534f;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+}
+
+.btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,var(--opacity-faint)); padding: 0.5rem 0.8rem; border-radius:4px; color:var(--text-primary); }
+.btn-primary { background: var(--accent); color: #fff; border:none; padding:0.5rem 0.8rem; border-radius:4px; }
+
+.loading { color: var(--text-secondary); padding: 1rem; }
+.error { color: #ff6b6b; background: rgba(255,107,107,0.06); padding: 0.6rem; border-radius: 4px; }

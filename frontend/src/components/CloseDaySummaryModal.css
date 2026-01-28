@@ -1,0 +1,242 @@
+.modal-content.close-day-summary-modal,
+.close-day-summary-modal .modal-content {
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* Wider layout for large screens */
+@media (min-width: 1200px) {
+    .modal-content.close-day-summary-modal,
+    .close-day-summary-modal .modal-content {
+        max-width: 1100px;
+        width: 90%;
+    }
+}
+
+.close-day-summary-modal .modal-header {
+    border-bottom: 2px solid var(--color-accent);
+}
+
+.close-day-summary-modal .modal-title {
+    color: var(--color-accent);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.summary-section {
+    margin: 1.5rem 0;
+}
+
+.summary-section h3 {
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.validation-warnings {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.validation-warning {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.validation-warning::before {
+    content: '⚠';
+    font-size: 1.2rem;
+}
+
+.tech-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tech-stats-table th,
+.tech-stats-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tech-stats-table th {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tech-stats-table td {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.tech-stats-table tr:last-child td {
+    border-bottom: none;
+}
+
+.tech-stats-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tech-alias {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.tech-name {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+}
+
+/* Absent tech styling */
+.tech-stats-table tr.absent-tech {
+    opacity: 0.5;
+}
+
+.tech-stats-table tr.absent-tech:hover {
+    opacity: 0.7;
+}
+
+.tech-stats-table tr.absent-tech .tech-alias,
+.tech-stats-table tr.absent-tech .tech-name {
+    font-style: italic;
+}
+
+.absent-indicator {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    font-style: italic;
+    margin-left: 0.5rem;
+}
+
+.value-after-adjustment {
+    font-weight: 600;
+    color: #4caf50;
+}
+
+.value-without-adjustment {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.adjustment-indicator {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+}
+
+.turns-display {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.turn-count {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.turn-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.turn-value {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.confirmation-section {
+    background-color: rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--color-accent);
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+}
+
+.confirmation-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.confirmation-warning {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading-summary {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.loading-summary::after {
+    content: '...';
+    animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* Numeric column alignment */
+.tech-stats-table td:nth-child(3),
+.tech-stats-table td:nth-child(4),
+.tech-stats-table td:nth-child(5),
+.tech-stats-table th:nth-child(3),
+.tech-stats-table th:nth-child(4),
+.tech-stats-table th:nth-child(5) {
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .close-day-summary-modal .modal-content {
+        max-width: 95%;
+    }
+
+    .tech-stats-table {
+        font-size: 0.8rem;
+    }
+
+    .tech-stats-table th,
+    .tech-stats-table td {
+        padding: 0.5rem;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}

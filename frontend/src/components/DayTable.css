@@ -1,0 +1,554 @@
+/**
+ * Day Table Styles
+ * Styling for the daily schedule table with alternating row colors
+ */
+
+.day-table-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.day-table-empty {
+    padding: 3rem;
+    text-align: center;
+    color: var(--color-accent);
+    opacity: 0.8;
+}
+
+.day-table-empty .hint {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+.table-wrapper {
+    flex: 1;
+    overflow: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.day-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-secondary);
+    font-size: 0.9rem;
+    table-layout: fixed;
+}
+
+.day-table thead {
+    background: var(--color-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.day-table th {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-accent);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    white-space: nowrap;
+}
+
+.day-table td {
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+/* Column widths */
+.col-row-number {
+    width: 44px;
+    min-width: 44px;
+}
+
+.col-tech-alias {
+    width: 72px;
+    min-width: 72px;
+}
+
+.col-tech-name {
+    width: 160px;
+    min-width: 120px;
+    text-align: left;
+    padding-left: 0.75rem;
+}
+
+.col-action {
+    width: 60px;
+    min-width: 60px;
+}
+
+.col-seating {
+    width: 40px;
+    min-width: 36px;
+}
+
+/* Reduce default TD padding specifically for seating columns to make cells denser */
+.day-table th.col-seating,
+.day-table td.col-seating {
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.day-table td.col-seating {
+    padding: 0.06rem 0.08rem;
+}
+
+.col-turns {
+    width: 70px;
+    min-width: 60px;
+}
+
+/* Alternating row colors - beige/tan alternating with darker rows */
+.day-row.even {
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.day-row.odd {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.day-row.on-break {
+    background: rgba(255, 0, 0, 0.1) !important;
+}
+
+.day-row.on-break .col-tech-alias {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+/* Clocked-out (inactive) row styling */
+.day-row.inactive {
+    background: rgba(128, 128, 128, 0.15) !important;
+}
+
+.day-row.inactive .col-tech-alias {
+    opacity: 0.4;
+    font-style: italic;
+    text-decoration: line-through;
+}
+
+/* Clickable tech alias */
+.col-tech-alias.clickable {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.col-tech-alias.clickable:hover {
+    background: rgba(212, 175, 55, 0.2);
+}
+
+/* New Seating Button */
+.btn-new-seating {
+    background: var(--color-accent);
+    color: var(--color-primary);
+    border: none;
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-new-seating:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.8);
+    transform: scale(1.1);
+}
+
+.btn-new-seating:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Seating Cells */
+.seating-cell {
+    padding: 0.12rem 0.12rem;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.seating-cell:not(.empty):hover {
+    background: rgba(212, 175, 55, 0.3);
+}
+
+.seating-cell.empty {
+    background: transparent;
+}
+
+.seating-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.75rem;
+}
+
+.seating-content.compact {
+    flex-direction: row;
+    gap: 0.12rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.seating-service {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.seating-time {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.7rem;
+}
+
+.seating-elapsed {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+.seating-elapsed.elapsed-warning {
+    color: rgba(255, 165, 0, 0.95); /* orange */
+}
+
+.seating-elapsed.elapsed-over {
+    color: rgba(255, 69, 58, 0.95); /* red */
+}
+
+.seating-elapsed.elapsed-caution {
+    color: rgba(255, 223, 77, 0.95); /* yellow */
+}
+
+.seating-value {
+    color: rgba(0, 255, 0, 0.7);
+    font-weight: 600;
+}
+
+/* Ensure seating value text remains green even when inline-value rule applies */
+.seating-value.inline-value {
+    color: rgba(0, 200, 0, 0.95);
+}
+
+.seating-requested-badge {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    border-radius: 8px;
+    background: #2b7be9; /* blue */
+    color: white;
+    text-align: center;
+    font-weight: 700;
+    margin-right: 2px;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.seating-penalty {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    border-radius: 8px;
+    background: rgba(255, 0, 0, 0.95);
+    color: white;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Seating status colors */
+.seating-cell.open {
+    background: rgba(255, 165, 0, 0.15);
+}
+
+.seating-cell.closed {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.seating-cell.requested {
+    /* requested indicated by badge; no left border */
+}
+
+.seating-cell.walkin {
+    border-left: 3px solid rgba(150, 150, 150, 0.4);
+}
+
+/* Regular turn (non-bonus) gets a green left border */
+.seating-cell.regular {
+    border-left: 3px solid rgba(0, 200, 0, 0.6);
+}
+
+.seating-cell.bonus {
+    border-right: 3px solid rgba(255, 215, 0, 0.7);
+}
+
+.seating-compact-row {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+}
+
+.seating-shortname {
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-right: 2px;
+}
+
+.inline-elapsed, .inline-value {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+}
+
+/* Table Pagination */
+.table-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.btn-page {
+    background: var(--color-secondary);
+    color: var(--color-accent);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.2);
+}
+
+.btn-page:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* Table Legend */
+.table-legend {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.75rem;
+    background: rgba(26, 26, 46, 0.5);
+    border-radius: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 3px;
+}
+
+.legend-box.open {
+    background: rgba(255, 165, 0, 0.3);
+}
+
+.legend-box.closed {
+    background: rgba(0, 255, 0, 0.2);
+}
+
+.legend-box.requested {
+    /* requested legend now represented by badge, not a border */
+}
+
+.legend-box.regular {
+    border-left: 4px solid rgba(0, 200, 0, 0.8);
+}
+
+.legend-box.walkin {
+    border-left: 4px solid rgba(150, 150, 150, 0.6);
+}
+
+.legend-box.bonus {
+    border-right: 4px solid rgba(255, 215, 0, 0.9);
+}
+
+/* Row Context Menu */
+.row-menu {
+    background: var(--color-secondary);
+    border: 2px solid var(--color-accent);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.row-menu h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-accent);
+    font-size: 1.1rem;
+}
+
+.row-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.row-menu-buttons .btn {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.row-menu-buttons .btn:hover {
+    opacity: 0.8;
+}
+
+.row-menu-buttons .btn-danger {
+    background: rgba(255, 50, 50, 0.8);
+    color: white;
+}
+
+.row-menu-buttons .btn-secondary {
+    background: var(--color-primary);
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+}
+
+/* Delete Modal */
+.delete-modal {
+    background: var(--color-secondary);
+    border: 2px solid rgba(255, 50, 50, 0.8);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-width: 350px;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.delete-modal h3 {
+    margin: 0 0 1rem 0;
+    color: rgba(255, 50, 50, 0.9);
+    font-size: 1.2rem;
+}
+
+.delete-modal p {
+    margin: 0.5rem 0;
+    color: rgba(212, 175, 55, 0.9);
+    line-height: 1.5;
+}
+
+.delete-modal strong {
+    color: var(--color-accent);
+}
+
+/* Move Modal */
+.move-modal {
+    background: var(--color-secondary);
+    border: 2px solid var(--color-accent);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-width: 350px;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.move-modal h3 {
+    margin: 0 0 1rem 0;
+    color: var(--color-accent);
+    font-size: 1.2rem;
+}
+
+.move-modal p {
+    margin: 0.5rem 0;
+    color: rgba(212, 175, 55, 0.9);
+}
+
+.move-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: rgba(26, 26, 46, 0.5);
+    border-radius: 4px;
+}
+
+.move-buttons .btn {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    min-width: 50px;
+}
+
+.move-buttons .btn-position {
+    background: var(--color-primary);
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+}
+
+.move-buttons .btn-position:hover {
+    background: var(--color-accent);
+    color: var(--color-primary);
+}
+
+.move-buttons .btn-current {
+    background: rgba(212, 175, 55, 0.3);
+    color: var(--color-accent);
+    border: 2px solid var(--color-accent);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .day-table {
+        font-size: 0.75rem;
+    }
+    
+    .col-seating {
+        width: 40px;
+        min-width: 36px;
+    }
+    
+    .seating-content {
+        font-size: 0.65rem;
+    }
+    
+    .table-legend {
+        font-size: 0.75rem;
+    }
+}
